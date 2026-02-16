@@ -1,16 +1,27 @@
 version: 2.1
 
-jobs:
-  say-hello:
+executors:
+  flutter-executor:
     docker:
-      - image: cimg/base:current
+      - image: cirrusci/flutter:stable
+    working_directory: ~/project
+
+jobs:
+  build:
+    executor: flutter-executor
     steps:
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: Install dependencies
+          command: flutter pub get
+      - run:
+          name: Run tests
+          command: flutter test
+      - run:
+          name: Build APK
+          command: flutter build apk --release
 
 workflows:
-  say-hello-workflow:
+  build_and_test:
     jobs:
-      - say-hello
+      - build
